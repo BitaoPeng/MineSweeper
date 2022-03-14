@@ -26,14 +26,15 @@ public class Minesweeper extends AbstractMineSweeper{
     public void startNewGame(Difficulty level) {
         switch (level)
         {
-            case EASY:
-                startNewGame(8, 8, 10);
-                break;
-            case  MEDIUM:
-                startNewGame(16,16,40);
-                break;
-            case HARD:
-                startNewGame(16,30,99);
+            case EASY -> {
+                startNewGame(8,8,10);
+            }
+            case MEDIUM -> {
+                startNewGame(16, 16, 40);
+            }
+            case HARD -> {
+                startNewGame(16, 30, 99);
+            }
         }
     }
 
@@ -43,6 +44,7 @@ public class Minesweeper extends AbstractMineSweeper{
         this.row = row;
         this.col = col;
         this.explosionCount = explosionCount;
+        this.world = new Tile[this.row][this.col];
 
         int count = 0;
 
@@ -65,6 +67,7 @@ public class Minesweeper extends AbstractMineSweeper{
             }
         }
 
+        viewNotifier.notifyNewGame(row, col);
     }
 
     @Override
@@ -90,31 +93,34 @@ public class Minesweeper extends AbstractMineSweeper{
     @Override
     public void open(int x, int y) {
         world[x][y].open();
+
     }
 
     @Override
     public void flag(int x, int y) {
         world[x][y].flag();
+        viewNotifier.notifyFlagged(x, y);
     }
 
     @Override
     public void unflag(int x, int y) {
         world[x][y].unflag();
+        viewNotifier.notifyUnflagged(x, y);
     }
 
     @Override
     public void deactivateFirstTileRule() {
-        int count = 0;
-        for(int i = 0; i < row; i++){
-            for(int j =0; j < col; j++){
-                if(world[i][j].isOpened() == false){
-                    count++;
-                }
-            }
-        }
-        if(count == row * col - 1){
-            if()
-        }
+//        int count = 0;
+//        for(int i = 0; i < row; i++){
+//            for(int j =0; j < col; j++){
+//                if(world[i][j].isOpened() == false){
+//                    count++;
+//                }
+//            }
+//        }
+//        if(count == row * col - 1){
+//            if()
+//        }
     }
 
     @Override
@@ -126,6 +132,4 @@ public class Minesweeper extends AbstractMineSweeper{
     public AbstractTile generateExplosiveTile() {
         return new Tile(true);
     }
-
-
 }

@@ -1,5 +1,7 @@
 package model;
 
+import view.TileView;
+
 public class Tile extends AbstractTile {
     private boolean isOpen;
     private boolean isFlag;
