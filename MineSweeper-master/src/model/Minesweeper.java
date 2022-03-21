@@ -1,4 +1,6 @@
 package model;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Minesweeper extends AbstractMineSweeper{
@@ -9,8 +11,15 @@ public class Minesweeper extends AbstractMineSweeper{
     private AbstractTile[][] world;
     private int openNumber;
     private int flagNumber;
+    private boolean win;
+    private boolean lose;
+    private LocalTime startTime;
 
     public Minesweeper() {
+    }
+
+    public Duration setTimer(){
+        return Duration.between(startTime, LocalTime.now());
     }
 
     @Override
@@ -48,8 +57,19 @@ public class Minesweeper extends AbstractMineSweeper{
         this.world = new Tile[this.row][this.col];
         this.openNumber = 0;
         this.flagNumber = 0;
+        this.lose = false;
+        this.win = false;
 
         int count = 0;
+
+        startTime = LocalTime.now();
+        Runnable R = () -> {
+            while (!lose && !win) {
+                viewNotifier.notifyTimeElapsedChanged(setTimer());
+            }
+        };
+
+        new Thread(R).start();
 
         //generate two random number at the same time(row number, column number), set the selected tile as explosive one
         Random random = new Random();
