@@ -45,9 +45,9 @@ public class GameModelTester {
         tile.open();
     }
 
-    @Test 
+    @Test
     public void testGeneratingExplosiveTile() {
-        TestableTile tile = gameModel.generateExplosiveTile();
+        TestableTile tile = gameModel.generateEmptyTile();
         assertNotNull(tile);
 
         tile.setTileNotifier(new MockTileStateNotifier() {
@@ -61,7 +61,7 @@ public class GameModelTester {
     }
 
 
-    @Test 
+    @Test
     public void testInitializingNewGame() {
         final int h = 5, w=3, totalExplosion = 4;
         gameModel.setGameStateNotifier(new MockGameStateNotifier() {
@@ -70,7 +70,7 @@ public class GameModelTester {
                 assertEquals(row, h);
                 assertEquals(col, w);
                 super.setInvoked();
-            }           
+            }
         });
         gameModel.startNewGame(h, w, 4);
         assertEquals(gameModel.getHeight(), h);
@@ -79,9 +79,9 @@ public class GameModelTester {
 
         assertThrows(Exception.class, () -> {
             for (int i=0; i<h; ++i)
-                for (int j=0; j<w; ++j) 
+                for (int j=0; j<w; ++j)
                     try {
-                        TestableTile temp = gameModel.getTile(i, j);
+                        TestableTile temp = gameModel.getTile(j, i);
                         if (temp == null) throw new Exception();
                     }catch (Exception e) {
                         e.printStackTrace();
@@ -92,18 +92,18 @@ public class GameModelTester {
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j) {
-                TestableTile temp = gameModel.getTile(i, j);
+                TestableTile temp = gameModel.getTile(j, i);
                 explosionCount += (temp.isExplosive())? 1 : 0;
-            }  
+            }
         assertEquals(explosionCount, totalExplosion);
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j)
-                assertNotNull(gameModel.getTile(i, j));
+                assertNotNull(gameModel.getTile(j, i));
 
         for (int i=0; i<h; ++i)
             for (int j=0; j<w; ++j)
-                assertTrue(gameModel.getTile(i, j) instanceof TestableTile);
+                assertTrue(gameModel.getTile(j, i) instanceof TestableTile);
 
     }
 
@@ -114,7 +114,7 @@ public class GameModelTester {
         for (int i=0; i<row; ++i)
             for (int j=0; j<col; ++j)
                 world[i][j] = ((i+j)%2 == 0)? gameModel.generateEmptyTile() : gameModel.generateExplosiveTile();
-        
+
 
         gameModel.setGameStateNotifier(new MockGameStateNotifier(){
             @Override
@@ -127,7 +127,7 @@ public class GameModelTester {
         gameModel.setWorld(world);
         for (int i=0; i<row; ++i)
             for (int j=0; j<col; ++j)
-                assertEquals(gameModel.getTile(i, j), world[i][j]);
+                assertEquals(gameModel.getTile(j, i), world[i][j]);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class GameModelTester {
         }
     }
 
-    @Test 
+    @Test
     public void testUnflagTile() {
         int size = 3;
         Deque<int[]> testQueue = new ArrayDeque<>();
@@ -204,7 +204,7 @@ public class GameModelTester {
                 --flagCounter;
                 super.setInvoked();
             }
-            
+
         });
 
         testQueue.push(new int[]{1, 1});
@@ -263,9 +263,9 @@ public class GameModelTester {
                 --testStepCounter;
                 super.setInvoked();
             }
-            
+
         });
-        
+
         gameModel.startNewGame(size, size, 1);
         gameModel.toggleFlag(target[0], target[1]);
         assertTrue(gameModel.getTile(target[0], target[1]).isFlagged());
@@ -274,15 +274,14 @@ public class GameModelTester {
         assertTrue(!gameModel.getTile(target[0], target[1]).isFlagged());
     }
 
-    ///////////////这个test（包括后面的）都不知道干嘛的居然还给跑起来了
     @Test
     public void testOpeningEmptyTileWithExplosiveNeighbours() {
         int target[] = {1, 1};
         final int explosionCount = 4;
         AbstractTile[][] world = new AbstractTile[][] {
-            {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(), gameModel.generateEmptyTile()}, 
-            {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
-            {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(), gameModel.generateEmptyTile()}, 
+                {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(), gameModel.generateEmptyTile()},
+                {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
+                {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(), gameModel.generateEmptyTile()},
         };
         gameModel.setGameStateNotifier(new MockGameStateNotifier() {
             @Override
@@ -305,18 +304,18 @@ public class GameModelTester {
     @Test
     public void testOpeningEmptyTileWithoutExplosiveNeighbours() {
         AbstractTile[][] world = new AbstractTile[][] {
-            {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
-            {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()}, 
-            {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()}, 
-            {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()}, 
-            {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
+                {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
+                {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()},
+                {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()},
+                {gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(),  gameModel.generateEmptyTile()},
+                {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateEmptyTile(), gameModel.generateExplosiveTile()},
         };
         final int[][] map = new int[][] {
-            {-1, 1, 0, 1, -1},
-            {1, 1, 0, 1, 1},
-            {0, 0, 0, 0, 0},
-            {1, 1, 0, 1, 1},
-            {-1, 1, 0, 1, -1},
+                {-1, 1, 0, 1, -1},
+                {1, 1, 0, 1, 1},
+                {0, 0, 0, 0, 0},
+                {1, 1, 0, 1, 1},
+                {-1, 1, 0, 1, -1},
         };
         boolean[][] openedMap = new boolean[map.length][map[0].length];
         gameModel.setGameStateNotifier(new MockGameStateNotifier() {
@@ -347,7 +346,7 @@ public class GameModelTester {
         gameModel.open(target[X], target[Y]);
         boolean isNonExplosiveTileOpened = true;
         for (int i=0; i<openedMap.length; ++i)
-            for (int j=0; j<openedMap[i].length; ++j) 
+            for (int j=0; j<openedMap[i].length; ++j)
                 if (map[i][j] >= 0)
                     isNonExplosiveTileOpened |= openedMap[i][j];
         assertTrue(isNonExplosiveTileOpened);
@@ -357,12 +356,12 @@ public class GameModelTester {
     public void testOpeningExplosiveTile() {
         int target[] = {0, 1};
         AbstractTile[][] world = new AbstractTile[][] {
-            {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(),}, 
-            {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(),},
+                {gameModel.generateEmptyTile(), gameModel.generateExplosiveTile(),},
+                {gameModel.generateExplosiveTile(), gameModel.generateEmptyTile(),},
         };
         final int[][] map = new int[][] {
-            {2, -1},
-            {-1, 2},};
+                {2, -1},
+                {-1, 2},};
         boolean[][] openedMap = new boolean[map.length][map[0].length];
         gameModel.setGameStateNotifier(new MockGameStateNotifier() {
             @Override
@@ -384,7 +383,7 @@ public class GameModelTester {
             @Override
             public void notifyExploded(int x, int y) {
                 assertEquals(map[y][x], -1);
-                super.setInvoked();       
+                super.setInvoked();
             }
             @Override
             public void notifyGameLost() {
@@ -402,7 +401,7 @@ public class GameModelTester {
         assertTrue(isAllTileOpened);
     }
 
-    @Test 
+    @Test
     public void testFlaggingOpenedTile() {
         final int size = 1;
         gameModel.setGameStateNotifier(new MockGameStateNotifier(){
@@ -423,14 +422,14 @@ public class GameModelTester {
             public void notifyFlagged(int x, int y) {
                 assertTrue("Opened Tile can't be flagged", false);
                 super.setInvoked();
-            }            
+            }
         });
         gameModel.startNewGame(1, 1, 0);
         gameModel.open(0, 0);
         gameModel.flag(0, 0);
     }
 
-    @Test 
+    @Test
     public void testOpenningFirstTile() {
         final int size = 2;
         gameModel.setGameStateNotifier(new MockGameStateNotifier(){
@@ -442,7 +441,7 @@ public class GameModelTester {
             public void notifyOpened(int x, int y, int explosiveNeighbourCount) {
                 super.setInvoked();
             }
-            @Override 
+            @Override
             public void notifyExploded(int x, int y) {
                 assertTrue("The first opened tile shouldn't be an explosive tile", false);
             }
@@ -478,55 +477,55 @@ public class GameModelTester {
         @Override
         public void notifyNewGame(int row, int col) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyGameLost() {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyGameWon() {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyFlagCountChanged(int newFlagCount) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyTimeElapsedChanged(Duration newTimeLeft) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyOpened(int x, int y, int explosiveNeighbourCount) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyFlagged(int x, int y) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyUnflagged(int x, int y) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         @Override
         public void notifyExploded(int x, int y) {
             setInvoked();
-            assertTrue("This method shouldn't be invoked in this test", false);       
+            assertTrue("This method shouldn't be invoked in this test", false);
         }
 
         public int getInvokedMethodCount() {return invoked;}

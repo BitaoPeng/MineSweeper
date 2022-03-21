@@ -11,8 +11,7 @@ public class Minesweeper extends AbstractMineSweeper{
     private AbstractTile[][] world;
     private int openNumber;
     private int flagNumber;
-    private boolean win;
-    private boolean lose;
+    private boolean end;
     private LocalTime startTime;
 
     public Minesweeper() {
@@ -36,15 +35,15 @@ public class Minesweeper extends AbstractMineSweeper{
     public void startNewGame(Difficulty level) {
         switch (level)
         {
-            case EASY -> {
+            case EASY:
                 startNewGame(8,8,10);
-            }
-            case MEDIUM -> {
+
+            case MEDIUM:
                 startNewGame(16, 16, 40);
-            }
-            case HARD -> {
+
+            case HARD:
                 startNewGame(10, 10, 2);
-            }
+
         }
     }
 
@@ -57,19 +56,19 @@ public class Minesweeper extends AbstractMineSweeper{
         this.world = new Tile[this.row][this.col];
         this.openNumber = 0;
         this.flagNumber = 0;
-        this.lose = false;
-        this.win = false;
+
+        this.end = false;
 
         int count = 0;
 
         startTime = LocalTime.now();
         Runnable R = () -> {
-            while (!lose && !win) {
+            while (!end) {
                 viewNotifier.notifyTimeElapsedChanged(setTimer());
             }
         };
-
         new Thread(R).start();
+
 
         //generate two random number at the same time(row number, column number), set the selected tile as explosive one
         Random random = new Random();
@@ -94,11 +93,12 @@ public class Minesweeper extends AbstractMineSweeper{
     }
 
     public int CountExplosiveNeighbour(int x, int y){
-        int explosiveNeighbourCount=0;
-        for(int i=0; i<row; i++){
-            for(int j=0; j<col; j++){
+        int explosiveNeighbourCount = 0;
+
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
                 //判断是否为相邻的格子，只有格子存在并且相邻才去判断是否为炸弹格子
-                if(x-1<=i && i<=x+1 && y-1<=j && j<=y+1){
+                if(x - 1 <= i && i <= x + 1 && y - 1 <= j && j <= y + 1){
                     if(world[i][j].isExplosive()){
                         explosiveNeighbourCount++;
                     }
@@ -141,11 +141,12 @@ public class Minesweeper extends AbstractMineSweeper{
                 //2.如果点开了炸弹
                 if(world[x][y].isExplosive()){
                     //3.如果是第一次点开炸弹
-                    if(openNumber==1){
+                    if(openNumber == 1){
                         startNewGame(row, col, explosionCount);
                         open(x,y);
                     }
                     else{
+                        end = true;
                         viewNotifier.notifyExploded(x,y);
                         viewNotifier.notifyGameLost();
                     }
@@ -167,6 +168,7 @@ public class Minesweeper extends AbstractMineSweeper{
 
                     }
                 }
+                end = true;
                 viewNotifier.notifyGameWon();
             }
         }
@@ -174,9 +176,9 @@ public class Minesweeper extends AbstractMineSweeper{
 
 
     public void openNeighbour(int x, int y){
-        for(int i=0; i<row; i++){
-            for(int j=0; j<col; j++){
-                if(x-1<=i && i<=x+1 && y-1<=j && j<=y+1){
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                if(x - 1 <= i && i <= x + 1 && y - 1 <= j && j <= y + 1){
                     open(i,j);
                 }
             }

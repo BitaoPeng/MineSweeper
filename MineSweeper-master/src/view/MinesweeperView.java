@@ -4,15 +4,7 @@ import model.Difficulty;
 import model.PlayableMinesweeper;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.plaf.DimensionUIResource;
 
 import java.awt.event.MouseAdapter;
@@ -47,6 +39,7 @@ public class MinesweeperView implements IGameStateNotifier {
     private JPanel flagPanel = new JPanel();
     private JLabel timerView = new JLabel();
     private JLabel flagCountView = new JLabel();
+    private JPanel game = new JPanel();
 
     public MinesweeperView() {
         this.window = new JFrame("Minesweeper");
@@ -141,7 +134,7 @@ public class MinesweeperView implements IGameStateNotifier {
 
     public void setGameModel(PlayableMinesweeper newGameModel) {
         this.gameModel = newGameModel;
-        this.gameModel.setGameStateNotifier(this);   //这个this指的是什么？？？？？？？？？？？？？？？？？？？？？？？？？？？
+        this.gameModel.setGameStateNotifier(this);
     }
 
     @Override
@@ -178,12 +171,16 @@ public class MinesweeperView implements IGameStateNotifier {
     }
     @Override
     public void notifyGameLost() {
+        JFrame f = new JFrame();
         this.removeAllTileEvents();
-        //throw new UnsupportedOperationException();
+        JOptionPane.showMessageDialog(f, "Bomb! You Lost the game!", "Lost", JOptionPane.ERROR_MESSAGE);
+        throw new UnsupportedOperationException();
     }
     @Override
     public void notifyGameWon() {
         this.removeAllTileEvents();
+        JFrame f = new JFrame();
+        JOptionPane.showMessageDialog(f, "Congratulations! You win the game!", "Win", JOptionPane.INFORMATION_MESSAGE);
         throw new UnsupportedOperationException();
     }
 
@@ -199,7 +196,7 @@ public class MinesweeperView implements IGameStateNotifier {
     }
 
     @Override
-    public void notifyTimeElapsedChanged(Duration newTimeElapsed) {
+    public void notifyTimeElapsedChanged(Duration newTimeElapsed){
         timerView.setText(
                     String.format("%d:%02d", newTimeElapsed.toMinutesPart(), newTimeElapsed.toSecondsPart()));
         
@@ -212,17 +209,17 @@ public class MinesweeperView implements IGameStateNotifier {
 
     @Override
     public void notifyFlagged(int x, int y) {
-        this.tiles[y][x].notifyFlagged();
+        this.tiles[x][y].notifyFlagged();
     }
 
     @Override
     public void notifyUnflagged(int x, int y) {
-        this.tiles[y][x].notifyUnflagged();
+        this.tiles[x][y].notifyUnflagged();
     }
 
     @Override
     public void notifyExploded(int x, int y) {
-        this.tiles[y][x].notifyExplode();
+        this.tiles[x][y].notifyExplode();
     }
 
 }
