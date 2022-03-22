@@ -8,10 +8,11 @@ import notifier.ITileStateNotifier;
 import view.MinesweeperView.AssetPath;
 
 public class TileView extends JButton implements ITileStateNotifier {
-    private static ImageIcon flagIcon = new ImageIcon(AssetPath.FLAG_ICON);
-    private static ImageIcon bombIcon = new ImageIcon(AssetPath.BOMB_ICON);
+    private static final ImageIcon flagIcon = new ImageIcon(AssetPath.FLAG_ICON);
+    private static final ImageIcon bombIcon = new ImageIcon(AssetPath.BOMB_ICON);
 
-    private int x, y;
+    private final int x;
+    private final int y;
     public TileView(int x, int y) {
         super();
         this.x = x;
@@ -52,7 +53,7 @@ public class TileView extends JButton implements ITileStateNotifier {
 
     @Override
     public String toString(){
-        return "["+Integer.toString(x)+","+Integer.toString(y)+"]";
+        return "["+ x +","+ y +"]";
     }
     
 }

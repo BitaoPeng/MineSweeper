@@ -35,14 +35,9 @@ public class Minesweeper extends AbstractMineSweeper{
     public void startNewGame(Difficulty level) {
         switch (level)
         {
-            case EASY:
-                startNewGame(8,8,10);
-
-            case MEDIUM:
-                startNewGame(16, 16, 40);
-
-            case HARD:
-                startNewGame(10, 10, 2);
+            case EASY -> startNewGame(8, 8, 10);
+            case MEDIUM -> startNewGame(16, 16, 40);
+            case HARD -> startNewGame(16, 30, 99);
 
         }
     }
@@ -69,10 +64,8 @@ public class Minesweeper extends AbstractMineSweeper{
         };
         new Thread(R).start();
 
-
         //generate two random number at the same time(row number, column number), set the selected tile as explosive one
         Random random = new Random();
-        //int[][] index = new int[explosionCount][explosionCount];
         while (count < explosionCount){
             int r = random.nextInt(row);
             int c = random.nextInt(col);
@@ -152,8 +145,8 @@ public class Minesweeper extends AbstractMineSweeper{
                     }
                 }
                 else{
-                    viewNotifier.notifyOpened(x,y,CountExplosiveNeighbour(x,y));
-                    if(CountExplosiveNeighbour(x,y)==0){
+                    viewNotifier.notifyOpened(x, y, CountExplosiveNeighbour(x,y));
+                    if(CountExplosiveNeighbour(x, y) == 0){
                         openNeighbour(x,y);
                     }
                 }

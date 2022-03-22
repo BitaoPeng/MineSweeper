@@ -4,7 +4,7 @@ import model.PlayableMinesweeper;
 import view.MinesweeperView;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         MinesweeperView view = new MinesweeperView();
         PlayableMinesweeper model = new Minesweeper();
         view.setGameModel(model);
