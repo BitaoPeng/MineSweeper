@@ -34,11 +34,18 @@ public class Minesweeper extends AbstractMineSweeper{
             case EASY -> {
                 startNewGame(8,8,10);
             }
+//            case MEDIUM -> {
+//                startNewGame(16, 16, 40);
+//            }
+//            case HARD -> {
+//                startNewGame(16, 30, 99);
+//            }
             case MEDIUM -> {
-                startNewGame(16, 16, 40);
+                startNewGame(8, 12, 1);
             }
+            //不能用8, 12, 94测试，因为当我点开第二个砖（极大可能为爆炸砖）时，其实openNumber==
             case HARD -> {
-                startNewGame(16, 30, 2);
+                startNewGame(8, 12, 93);
             }
         }
     }
@@ -61,7 +68,10 @@ public class Minesweeper extends AbstractMineSweeper{
             }
         };
         new Thread(R).start();//创建线程（相当于创建一个子程序，可以和后面的程序一起进行）
+        generateLayout();
+    }
 
+    public void generateLayout(){
         int count = 0;
         //generate two random number at the same time(row number, column number), set the selected tile as explosive one
         Random random = new Random();
@@ -81,8 +91,8 @@ public class Minesweeper extends AbstractMineSweeper{
                     world[i][j] = generateEmptyTile();
             }
         }
-
         viewNotifier.notifyNewGame(row, col);
+
     }
 
     public Duration setTimer(){
@@ -132,13 +142,16 @@ public class Minesweeper extends AbstractMineSweeper{
         if(!world[x][y].isOpened()){
             //2.立了旗的空格不能被打开
             if(!world[x][y].isFlagged()){
-                world[x][y].open();
+                world[x][y].open();//很重要！！！！
                 openNumber++;
                 //3.如果点开了炸弹
                 if(world[x][y].isExplosive()){
                     //4.如果是第一次点开炸弹
                     if(openNumber==1){
-                        startNewGame(row, col, explosionCount);
+//                      startNewGame(row, col, explosionCount);
+                        deactivateFirstTileRule();
+                        world[x][y] = generateEmptyTile();
+                        openNumber=0;//！！！如果是用之前startNewGame的方法，会自动调用startNewGame时就会把openNumber清零
                         open(x,y);
                     }
                     else{//游戏失败
@@ -162,11 +175,11 @@ public class Minesweeper extends AbstractMineSweeper{
                 }
             }
             //判断游戏是否胜利
-            isWining();
+            ifWining();
         }
     }
 
-    public void isWining(){
+    public void ifWining(){
         if(openNumber == row * col - explosionCount){
             for(int i=0; i<row; i++){
                 for(int j=0; j<col; j++){
@@ -209,7 +222,18 @@ public class Minesweeper extends AbstractMineSweeper{
     }
 
     @Override
+    //不加judge这个变量，这个函数功能实现不了（不知道为什么）
     public void deactivateFirstTileRule() {
+        boolean judge = true;
+        for(int i=0; i<row; i++){
+            for(int j=0; j<col; j++){
+                if(!world[i][j].isExplosive() && judge){
+                    world[i][j] = generateExplosiveTile();
+                    judge = false;
+                    break;
+                }
+            }
+        }
     }
 
     @Override
